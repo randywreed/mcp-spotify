@@ -88,3 +88,5 @@ You'll need to provide your Spotify API credentials:
 ## License
 
 MIT License
+
+[![smithery badge](https://smithery.ai/badge/@superseoworld/mcp-spotify)](https://smithery.ai/server/@superseoworld/mcp-spotify)
