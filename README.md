@@ -97,6 +97,8 @@ You'll need to provide your Spotify API credentials:
 - `add_tracks_to_playlist`: Add one or more tracks to a playlist with optional position
 - `remove_tracks_from_playlist`: Remove one or more tracks from a playlist with optional positions and snapshot ID
 - `get_current_user_playlists`: Get a list of the playlists owned or followed by the current Spotify user (1-50 playlists per request)
+- `get_featured_playlists`: Get a list of Spotify featured playlists with optional locale and pagination support
+- `get_category_playlists`: Get a list of Spotify playlists tagged with a particular category
 
 ## Updating
 
