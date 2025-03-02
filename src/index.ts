@@ -305,7 +305,7 @@ class SpotifyServer {
         },
         {
           name: 'get_available_genres',
-          description: 'Get a list of available genre seeds for recommendations',
+          description: 'Get a list of available genres for recommendations',
           inputSchema: {
             type: 'object',
             properties: {},
@@ -779,7 +779,7 @@ class SpotifyServer {
           case 'get_available_genres': {
             const result = await this.tracksHandler.getAvailableGenres();
             return {
-              content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+              content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
             };
           }
 

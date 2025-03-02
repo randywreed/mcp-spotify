@@ -14,3 +14,7 @@ export interface SearchArgs {
   type: 'track' | 'album' | 'artist' | 'playlist';
   limit?: number;
 }
+
+export interface GenreSeedsResponse {
+  genres: string[];
+}
