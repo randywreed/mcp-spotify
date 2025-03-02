@@ -9,12 +9,6 @@ export interface RecommendationsArgs {
   limit?: number;
 }
 
-export interface SearchArgs {
-  query: string;
-  type: 'track' | 'album' | 'artist' | 'playlist';
-  limit?: number;
-}
-
 export interface GenreSeedsResponse {
   genres: string[];
 }

@@ -15,6 +15,7 @@ import { AlbumsHandler } from './handlers/albums.js';
 import { TracksHandler } from './handlers/tracks.js';
 import { AudiobooksHandler } from './handlers/audiobooks.js';
 import { PlaylistsHandler } from './handlers/playlists.js';
+import { SearchHandler } from './handlers/search.js';
 
 import {
   ArtistArgs,
@@ -32,10 +33,10 @@ import {
 import {
   TrackArgs,
   RecommendationsArgs,
-  SearchArgs,
 } from './types/tracks.js';
 import { AudiobookArgs, MultipleAudiobooksArgs, AudiobookChaptersArgs } from './types/audiobooks.js';
 import { PlaylistArgs, PlaylistTracksArgs, PlaylistItemsArgs, ModifyPlaylistArgs, AddTracksToPlaylistArgs, RemoveTracksFromPlaylistArgs, GetCurrentUserPlaylistsArgs, GetFeaturedPlaylistsArgs, GetCategoryPlaylistsArgs } from './types/playlists.js';
+import { SearchArgs as SearchArgsType } from './types/search.js';
 
 class SpotifyServer {
   private validateArgs<T>(args: Record<string, unknown> | undefined, requiredFields: string[]): T {
@@ -61,6 +62,7 @@ class SpotifyServer {
   private server: Server;
   private authManager: AuthManager;
   private api: SpotifyApi;
+  private searchHandler: SearchHandler;
   private artistsHandler: ArtistsHandler;
   private albumsHandler: AlbumsHandler;
   private tracksHandler: TracksHandler;
@@ -71,7 +73,7 @@ class SpotifyServer {
     this.server = new Server(
       {
         name: 'mcp-spotify',
-        version: '0.4.6',
+        version: '0.4.10',
       },
       {
         capabilities: {
@@ -82,6 +84,7 @@ class SpotifyServer {
 
     this.authManager = new AuthManager();
     this.api = new SpotifyApi(this.authManager);
+    this.searchHandler = new SearchHandler(this.api);
     this.artistsHandler = new ArtistsHandler(this.api);
     this.albumsHandler = new AlbumsHandler(this.api);
     this.tracksHandler = new TracksHandler(this.api);
@@ -697,8 +700,8 @@ class SpotifyServer {
           }
 
           case 'search': {
-            const args = this.validateArgs<SearchArgs>(request.params.arguments, ['query', 'type']);
-            const result = await this.tracksHandler.search(args);
+            const args = this.validateArgs<SearchArgsType>(request.params.arguments, ['query', 'type']);
+            const result = await this.searchHandler.search(args);
             return {
               content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
             };
