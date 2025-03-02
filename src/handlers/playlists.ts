@@ -1,5 +1,5 @@
 import { SpotifyApi } from '../utils/api.js';
-import { PlaylistArgs, PlaylistTracksArgs, PlaylistItemsArgs, ModifyPlaylistArgs, AddTracksToPlaylistArgs, RemoveTracksFromPlaylistArgs, GetCurrentUserPlaylistsArgs } from '../types/playlists.js';
+import { PlaylistArgs, PlaylistTracksArgs, PlaylistItemsArgs, ModifyPlaylistArgs, AddTracksToPlaylistArgs, RemoveTracksFromPlaylistArgs, GetCurrentUserPlaylistsArgs, GetFeaturedPlaylistsArgs, GetCategoryPlaylistsArgs } from '../types/playlists.js';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 
 export class PlaylistsHandler {
@@ -111,6 +111,33 @@ export class PlaylistsHandler {
 
     return this.api.makeRequest(
       `/me/playlists${this.api.buildQueryString(params)}`
+    );
+  }
+
+  async getFeaturedPlaylists(args: GetFeaturedPlaylistsArgs) {
+    const { locale, limit, offset } = args;
+
+    const params = {
+      ...(locale !== undefined && { locale }),
+      ...(limit !== undefined && { limit }),
+      ...(offset !== undefined && { offset })
+    };
+
+    return this.api.makeRequest(
+      `/browse/featured-playlists${this.api.buildQueryString(params)}`
+    );
+  }
+
+  async getCategoryPlaylists(args: GetCategoryPlaylistsArgs) {
+    const { category_id, limit, offset } = args;
+
+    const params = {
+      ...(limit !== undefined && { limit }),
+      ...(offset !== undefined && { offset })
+    };
+
+    return this.api.makeRequest(
+      `/browse/categories/${category_id}/playlists${this.api.buildQueryString(params)}`
     );
   }
 }

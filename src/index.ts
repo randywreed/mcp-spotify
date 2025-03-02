@@ -35,7 +35,7 @@ import {
   SearchArgs,
 } from './types/tracks.js';
 import { AudiobookArgs, MultipleAudiobooksArgs, AudiobookChaptersArgs } from './types/audiobooks.js';
-import { PlaylistArgs, PlaylistTracksArgs, PlaylistItemsArgs, ModifyPlaylistArgs, AddTracksToPlaylistArgs, RemoveTracksFromPlaylistArgs, GetCurrentUserPlaylistsArgs } from './types/playlists.js';
+import { PlaylistArgs, PlaylistTracksArgs, PlaylistItemsArgs, ModifyPlaylistArgs, AddTracksToPlaylistArgs, RemoveTracksFromPlaylistArgs, GetCurrentUserPlaylistsArgs, GetFeaturedPlaylistsArgs, GetCategoryPlaylistsArgs } from './types/playlists.js';
 
 class SpotifyServer {
   private validateArgs<T>(args: Record<string, unknown> | undefined, requiredFields: string[]): T {
@@ -633,6 +633,55 @@ class SpotifyServer {
               }
             }
           },
+        },
+        {
+          name: 'get_featured_playlists',
+          description: 'Get a list of Spotify featured playlists',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              locale: {
+                type: 'string',
+                description: 'Optional. Desired language (format: es_MX)'
+              },
+              limit: {
+                type: 'number',
+                description: 'Optional. Maximum number of playlists (1-50)',
+                minimum: 1,
+                maximum: 50
+              },
+              offset: {
+                type: 'number',
+                description: 'Optional. Index of the first playlist to return',
+                minimum: 0
+              }
+            }
+          },
+        },
+        {
+          name: 'get_category_playlists',
+          description: 'Get a list of Spotify playlists tagged with a particular category',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              category_id: {
+                type: 'string',
+                description: 'The Spotify category ID'
+              },
+              limit: {
+                type: 'number',
+                description: 'Optional. Maximum number of playlists (1-50)',
+                minimum: 1,
+                maximum: 50
+              },
+              offset: {
+                type: 'number',
+                description: 'Optional. Index of the first playlist to return',
+                minimum: 0
+              }
+            },
+            required: ['category_id']
+          },
         }
       ],
     }));
@@ -825,6 +874,22 @@ class SpotifyServer {
           case 'get_current_user_playlists': {
             const args = this.validateArgs<GetCurrentUserPlaylistsArgs>(request.params.arguments || {}, []);
             const result = await this.playlistsHandler.getCurrentUserPlaylists(args);
+            return {
+              content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+            };
+          }
+
+          case 'get_featured_playlists': {
+            const args = this.validateArgs<GetFeaturedPlaylistsArgs>(request.params.arguments || {}, []);
+            const result = await this.playlistsHandler.getFeaturedPlaylists(args);
+            return {
+              content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+            };
+          }
+
+          case 'get_category_playlists': {
+            const args = this.validateArgs<GetCategoryPlaylistsArgs>(request.params.arguments, ['category_id']);
+            const result = await this.playlistsHandler.getCategoryPlaylists(args);
             return {
               content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
             };

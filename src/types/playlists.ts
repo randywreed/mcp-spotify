@@ -41,3 +41,15 @@ export interface GetCurrentUserPlaylistsArgs extends PaginationParams {
   limit?: number;
   offset?: number;
 }
+
+export interface GetFeaturedPlaylistsArgs {
+  locale?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface GetCategoryPlaylistsArgs {
+  category_id: string;
+  limit?: number;
+  offset?: number;
+}
