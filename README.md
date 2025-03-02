@@ -1,8 +1,11 @@
 # MCP Spotify Server
 
 [![smithery badge](https://smithery.ai/badge/@superseoworld/mcp-spotify)](https://smithery.ai/server/@superseoworld/mcp-spotify)
+[![npm version](https://img.shields.io/npm/v/@thomaswawra/server-spotify.svg)](https://www.npmjs.com/package/@thomaswawra/server-spotify)
 
 A Model Context Protocol (MCP) server that provides access to the Spotify Web API. This server enables interaction with Spotify's music catalog, including searching for tracks, albums, and artists, as well as accessing artist-specific information like top tracks and related artists.
+
+**Current Version:** 0.4.7
 
 <a href="https://glama.ai/mcp/servers/mmrvuig6tp"><img width="380" height="200" src="https://glama.ai/mcp/servers/mmrvuig6tp/badge" alt="Spotify Server MCP server" /></a>
 
@@ -17,6 +20,15 @@ npx -y @smithery/cli install @superseoworld/mcp-spotify --client claude
 ```
 
 ### Manual Installation
+
+You can install the package globally:
+
+```bash
+npm install -g @thomaswawra/server-spotify
+```
+
+Or run it directly with npx:
+
 ```bash
 npx -y @thomaswawra/server-spotify
 ```
@@ -72,8 +84,9 @@ You'll need to provide your Spotify API credentials:
 - `get_album`: Get album information
 - `get_album_tracks`: Get an album's tracks
 - `get_track`: Get track information
+- `get_available_genres`: Get a list of available genres for recommendations
 - `get_new_releases`: Get new album releases
-- `get_recommendations`: Get track recommendations
+- `get_recommendations`: Get track recommendations based on seed tracks, artists, or genres
 - `get_audiobook`: Get audiobook information with optional market parameter
 - `get_multiple_audiobooks`: Get information for multiple audiobooks (max 50)
 - `get_audiobook_chapters`: Get chapters of an audiobook with pagination support (1-50 chapters per request)
@@ -84,6 +97,29 @@ You'll need to provide your Spotify API credentials:
 - `add_tracks_to_playlist`: Add one or more tracks to a playlist with optional position
 - `remove_tracks_from_playlist`: Remove one or more tracks from a playlist with optional positions and snapshot ID
 - `get_current_user_playlists`: Get a list of the playlists owned or followed by the current Spotify user (1-50 playlists per request)
+
+## Updating
+
+To update to the latest version:
+
+```bash
+# If installed globally
+npm update -g @thomaswawra/server-spotify
+
+# If using npx, it will automatically use the latest version
+npx -y @thomaswawra/server-spotify
+```
+
+## Development
+
+This project is open source and available on GitHub at [https://github.com/superseoworld/mcp-spotify](https://github.com/superseoworld/mcp-spotify).
+
+To contribute:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
