@@ -1,22 +1,22 @@
-# MCP Spotify Server
+# ArtistLens
 
-[![smithery badge](https://smithery.ai/badge/@superseoworld/mcp-spotify)](https://smithery.ai/server/@superseoworld/mcp-spotify)
-[![npm version](https://img.shields.io/npm/v/@thomaswawra/server-spotify.svg)](https://www.npmjs.com/package/@thomaswawra/server-spotify)
+[![smithery badge](https://smithery.ai/badge/@superseoworld/artistlens)](https://smithery.ai/server/@superseoworld/artistlens)
+[![npm version](https://img.shields.io/npm/v/@thomaswawra/artistlens.svg)](https://www.npmjs.com/package/@thomaswawra/artistlens)
 
-A Model Context Protocol (MCP) server that provides access to the Spotify Web API. This server enables interaction with Spotify's music catalog, including searching for tracks, albums, and artists, as well as accessing artist-specific information like top tracks and related artists.
+A powerful Model Context Protocol (MCP) server that provides access to the Spotify Web API. ArtistLens enables seamless interaction with Spotify's music catalog, including searching for tracks, albums, and artists, as well as accessing artist-specific information like top tracks and related artists.
 
 **Current Version:** 0.4.12
 
-<a href="https://glama.ai/mcp/servers/mmrvuig6tp"><img width="380" height="200" src="https://glama.ai/mcp/servers/mmrvuig6tp/badge" alt="Spotify Server MCP server" /></a>
+<a href="https://glama.ai/mcp/servers/mmrvuig6tp"><img width="380" height="200" src="https://glama.ai/mcp/servers/mmrvuig6tp/badge" alt="ArtistLens MCP server" /></a>
 
 ## Installation
 
 ### Installing via Smithery
 
-To install MCP Spotify Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@superseoworld/mcp-spotify):
+To install ArtistLens for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@superseoworld/artistlens):
 
 ```bash
-npx -y @smithery/cli install @superseoworld/mcp-spotify --client claude
+npx -y @smithery/cli install @superseoworld/artistlens --client claude
 ```
 
 ### Manual Installation
@@ -24,13 +24,13 @@ npx -y @smithery/cli install @superseoworld/mcp-spotify --client claude
 You can install the package globally:
 
 ```bash
-npm install -g @thomaswawra/server-spotify
+npm install -g @thomaswawra/artistlens
 ```
 
 Or run it directly with npx:
 
 ```bash
-npx -y @thomaswawra/server-spotify
+npx -y @thomaswawra/artistlens
 ```
 
 ## Configuration
@@ -42,7 +42,7 @@ Add to your MCP settings file (e.g., `claude_desktop_config.json` or `cline_mcp_
   "mcpServers": {
     "spotify": {
       "command": "npx",
-      "args": ["-y", "@thomaswawra/server-spotify"],
+      "args": ["-y", "@thomaswawra/artistlens"],
       "env": {
         "SPOTIFY_CLIENT_ID": "your_client_id",
         "SPOTIFY_CLIENT_SECRET": "your_client_secret"
@@ -108,15 +108,15 @@ To update to the latest version:
 
 ```bash
 # If installed globally
-npm update -g @thomaswawra/server-spotify
+npm update -g @thomaswawra/artistlens
 
 # If using npx, it will automatically use the latest version
-npx -y @thomaswawra/server-spotify
+npx -y @thomaswawra/artistlens
 ```
 
 ## Development
 
-This project is open source and available on GitHub at [https://github.com/superseoworld/mcp-spotify](https://github.com/superseoworld/mcp-spotify).
+This project is open source and available on GitHub at [https://github.com/superseoworld/artistlens](https://github.com/superseoworld/artistlens).
 
 ### Project Structure
 
@@ -154,4 +154,4 @@ To contribute:
 
 MIT License
 
-[![smithery badge](https://smithery.ai/badge/@superseoworld/mcp-spotify)](https://smithery.ai/server/@superseoworld/mcp-spotify)
+[![smithery badge](https://smithery.ai/badge/@superseoworld/artistlens)](https://smithery.ai/server/@superseoworld/artistlens)

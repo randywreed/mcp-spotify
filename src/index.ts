@@ -72,7 +72,7 @@ class SpotifyServer {
   constructor() {
     this.server = new Server(
       {
-        name: 'mcp-spotify',
+        name: 'artistlens',
         version: '0.4.12',
       },
       {

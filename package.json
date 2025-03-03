@@ -1,10 +1,10 @@
 {
-  "name": "@thomaswawra/server-spotify",
+  "name": "@thomaswawra/artistlens",
   "version": "0.4.12",
-  "description": "Spotify Web API MCP server for accessing music, artists, albums, and recommendations",
+  "description": "ArtistLens - A powerful Spotify Web API integration for accessing music, artists, albums, and recommendations",
   "type": "module",
   "bin": {
-    "mcp-spotify": "./build/index.js"
+    "artistlens": "./build/index.js"
   },
   "files": [
     "build"
@@ -33,13 +33,14 @@
     "spotify",
     "music",
     "api",
-    "modelcontextprotocol"
+    "modelcontextprotocol",
+    "artistlens"
   ],
   "author": "Thomas Wawra",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/superseoworld/mcp-spotify.git"
+    "url": "https://github.com/superseoworld/artistlens.git"
   },
   "publishConfig": {
     "access": "public"
