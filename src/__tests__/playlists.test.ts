@@ -2,132 +2,140 @@ import { jest } from '@jest/globals';
 import { PlaylistsHandler } from '../handlers/playlists.js';
 import { SpotifyApi } from '../utils/api.js';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
+import { AuthManager } from '../utils/auth.js';
 
-// Mock the SpotifyApi class
-jest.mock('../utils/api.js');
+jest.mock('../utils/api');
 
 describe('PlaylistsHandler', () => {
-  let playlistsHandler: PlaylistsHandler;
+  let handler: PlaylistsHandler;
   let mockApi: jest.Mocked<SpotifyApi>;
 
   beforeEach(() => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
-
-    // Create a mock instance of SpotifyApi
     mockApi = {
       makeRequest: jest.fn(),
       buildQueryString: jest.fn(),
     } as unknown as jest.Mocked<SpotifyApi>;
-
-    playlistsHandler = new PlaylistsHandler(mockApi);
+    handler = new PlaylistsHandler(mockApi);
   });
 
   describe('getPlaylist', () => {
     it('should fetch a playlist by ID', async () => {
-      const mockPlaylist = { id: '123', name: 'Test Playlist' };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylist);
+      const mockResponse = { id: '123', name: 'Test Playlist' };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getPlaylist({ id: '123' });
+      const result = await handler.getPlaylist({ id: '123' });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123');
-      expect(result).toEqual(mockPlaylist);
+      expect(result).toEqual(mockResponse);
     });
 
     it('should fetch a playlist with market parameter', async () => {
-      const mockPlaylist = { id: '123', name: 'Test Playlist' };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylist);
+      const mockResponse = { id: '123', name: 'Test Playlist' };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('?market=US');
 
-      const result = await playlistsHandler.getPlaylist({ id: '123', market: 'US' });
+      const result = await handler.getPlaylist({ id: '123', market: 'US' });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123?market=US');
-      expect(result).toEqual(mockPlaylist);
+      expect(result).toEqual(mockResponse);
     });
 
     it('should handle spotify:playlist: prefixed IDs', async () => {
-      const mockPlaylist = { id: '123', name: 'Test Playlist' };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylist);
+      const mockResponse = { id: '123', name: 'Test Playlist' };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getPlaylist({ id: 'spotify:playlist:123' });
+      const result = await handler.getPlaylist({ id: 'spotify:playlist:123' });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123');
-      expect(result).toEqual(mockPlaylist);
+      expect(result).toEqual(mockResponse);
     });
   });
 
   describe('getPlaylistTracks', () => {
     it('should fetch playlist tracks with default parameters', async () => {
-      const mockTracks = { items: [{ id: '1' }, { id: '2' }] };
-      mockApi.makeRequest.mockResolvedValue(mockTracks);
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getPlaylistTracks({ id: '123' });
+      const result = await handler.getPlaylistTracks({ id: '123' });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/tracks');
-      expect(result).toEqual(mockTracks);
+      expect(result).toEqual(mockResponse);
     });
 
     it('should fetch playlist tracks with custom parameters', async () => {
-      const mockTracks = { items: [{ id: '1' }, { id: '2' }] };
-      mockApi.makeRequest.mockResolvedValue(mockTracks);
-      mockApi.buildQueryString.mockReturnValue('?market=US&limit=10&offset=20&fields=items(track(name))');
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+      mockApi.buildQueryString.mockReturnValue('?market=US&limit=30&offset=20&fields=items(track(id,name))');
 
-      const result = await playlistsHandler.getPlaylistTracks({
+      const result = await handler.getPlaylistTracks({
         id: '123',
         market: 'US',
-        limit: 10,
+        limit: 30,
         offset: 20,
-        fields: 'items(track(name))'
+        fields: 'items(track(id,name))'
       });
 
-      expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/tracks?market=US&limit=10&offset=20&fields=items(track(name))');
-      expect(result).toEqual(mockTracks);
+      expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/tracks?market=US&limit=30&offset=20&fields=items(track(id,name))');
+      expect(result).toEqual(mockResponse);
     });
 
     it('should handle spotify:playlist: prefixed IDs', async () => {
-      const mockTracks = { items: [{ id: '1' }, { id: '2' }] };
-      mockApi.makeRequest.mockResolvedValue(mockTracks);
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getPlaylistTracks({
+      const result = await handler.getPlaylistTracks({
         id: 'spotify:playlist:123'
       });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/tracks');
-      expect(result).toEqual(mockTracks);
+      expect(result).toEqual(mockResponse);
     });
   });
 
   describe('getPlaylistItems', () => {
     it('should fetch playlist items with default parameters', async () => {
-      const mockItems = { items: [{ id: '1' }, { id: '2' }] };
-      mockApi.makeRequest.mockResolvedValue(mockItems);
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getPlaylistItems({ id: '123' });
+      const result = await handler.getPlaylistItems({ id: '123' });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/items');
-      expect(result).toEqual(mockItems);
+      expect(result).toEqual(mockResponse);
     });
 
     it('should fetch playlist items with custom parameters', async () => {
-      const mockItems = { items: [{ id: '1' }, { id: '2' }] };
-      mockApi.makeRequest.mockResolvedValue(mockItems);
-      mockApi.buildQueryString.mockReturnValue('?market=US&limit=10&offset=20&fields=items(track(name))');
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+      mockApi.buildQueryString.mockReturnValue('?market=US&limit=30&offset=20&fields=items(track(id,name))');
 
-      const result = await playlistsHandler.getPlaylistItems({
+      const result = await handler.getPlaylistItems({
         id: '123',
         market: 'US',
-        limit: 10,
+        limit: 30,
         offset: 20,
-        fields: 'items(track(name))'
+        fields: 'items(track(id,name))'
       });
 
-      expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/items?market=US&limit=10&offset=20&fields=items(track(name))');
-      expect(result).toEqual(mockItems);
+      expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/items?market=US&limit=30&offset=20&fields=items(track(id,name))');
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle spotify:playlist: prefixed IDs', async () => {
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+      mockApi.buildQueryString.mockReturnValue('');
+
+      const result = await handler.getPlaylistItems({
+        id: 'spotify:playlist:123'
+      });
+
+      expect(mockApi.makeRequest).toHaveBeenCalledWith('/playlists/123/items');
+      expect(result).toEqual(mockResponse);
     });
   });
 
@@ -136,7 +144,7 @@ describe('PlaylistsHandler', () => {
       const mockResponse = { id: '123', name: 'Updated Playlist' };
       mockApi.makeRequest.mockResolvedValue(mockResponse);
 
-      const result = await playlistsHandler.modifyPlaylist({
+      const result = await handler.modifyPlaylist({
         id: '123',
         name: 'Updated Playlist',
         public: true,
@@ -161,8 +169,27 @@ describe('PlaylistsHandler', () => {
       const mockResponse = { id: '123', name: 'Updated Playlist' };
       mockApi.makeRequest.mockResolvedValue(mockResponse);
 
-      const result = await playlistsHandler.modifyPlaylist({
+      const result = await handler.modifyPlaylist({
         id: '123',
+        name: 'Updated Playlist'
+      });
+
+      expect(mockApi.makeRequest).toHaveBeenCalledWith(
+        '/playlists/123',
+        'PUT',
+        {
+          name: 'Updated Playlist'
+        }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle spotify:playlist: prefixed IDs', async () => {
+      const mockResponse = { id: '123', name: 'Updated Playlist' };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+
+      const result = await handler.modifyPlaylist({
+        id: 'spotify:playlist:123',
         name: 'Updated Playlist'
       });
 
@@ -182,16 +209,16 @@ describe('PlaylistsHandler', () => {
       const mockResponse = { snapshot_id: 'abc123' };
       mockApi.makeRequest.mockResolvedValue(mockResponse);
 
-      const result = await playlistsHandler.addTracksToPlaylist({
+      const result = await handler.addTracksToPlaylist({
         id: '123',
-        uris: ['spotify:track:1', 'spotify:track:2']
+        uris: ['spotify:track:456', 'spotify:track:789']
       });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith(
         '/playlists/123/tracks',
         'POST',
         {
-          uris: ['spotify:track:1', 'spotify:track:2']
+          uris: ['spotify:track:456', 'spotify:track:789']
         }
       );
       expect(result).toEqual(mockResponse);
@@ -201,9 +228,9 @@ describe('PlaylistsHandler', () => {
       const mockResponse = { snapshot_id: 'abc123' };
       mockApi.makeRequest.mockResolvedValue(mockResponse);
 
-      const result = await playlistsHandler.addTracksToPlaylist({
+      const result = await handler.addTracksToPlaylist({
         id: '123',
-        uris: ['spotify:track:1'],
+        uris: ['spotify:track:456'],
         position: 5
       });
 
@@ -211,8 +238,27 @@ describe('PlaylistsHandler', () => {
         '/playlists/123/tracks',
         'POST',
         {
-          uris: ['spotify:track:1'],
+          uris: ['spotify:track:456'],
           position: 5
+        }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle spotify:playlist: prefixed IDs', async () => {
+      const mockResponse = { snapshot_id: 'abc123' };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+
+      const result = await handler.addTracksToPlaylist({
+        id: 'spotify:playlist:123',
+        uris: ['spotify:track:456']
+      });
+
+      expect(mockApi.makeRequest).toHaveBeenCalledWith(
+        '/playlists/123/tracks',
+        'POST',
+        {
+          uris: ['spotify:track:456']
         }
       );
       expect(result).toEqual(mockResponse);
@@ -224,28 +270,34 @@ describe('PlaylistsHandler', () => {
       const mockResponse = { snapshot_id: 'abc123' };
       mockApi.makeRequest.mockResolvedValue(mockResponse);
 
-      const result = await playlistsHandler.removeTracksFromPlaylist({
+      const result = await handler.removeTracksFromPlaylist({
         id: '123',
-        tracks: [{ uri: 'spotify:track:1' }, { uri: 'spotify:track:2' }]
+        tracks: [
+          { uri: 'spotify:track:456' },
+          { uri: 'spotify:track:789' }
+        ]
       });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith(
         '/playlists/123/tracks',
         'DELETE',
         {
-          tracks: [{ uri: 'spotify:track:1' }, { uri: 'spotify:track:2' }]
+          tracks: [
+            { uri: 'spotify:track:456' },
+            { uri: 'spotify:track:789' }
+          ]
         }
       );
       expect(result).toEqual(mockResponse);
     });
 
-    it('should remove tracks from playlist with snapshot_id', async () => {
+    it('should remove tracks from playlist with snapshot ID', async () => {
       const mockResponse = { snapshot_id: 'abc123' };
       mockApi.makeRequest.mockResolvedValue(mockResponse);
 
-      const result = await playlistsHandler.removeTracksFromPlaylist({
+      const result = await handler.removeTracksFromPlaylist({
         id: '123',
-        tracks: [{ uri: 'spotify:track:1' }],
+        tracks: [{ uri: 'spotify:track:456' }],
         snapshot_id: 'abc123'
       });
 
@@ -253,8 +305,27 @@ describe('PlaylistsHandler', () => {
         '/playlists/123/tracks',
         'DELETE',
         {
-          tracks: [{ uri: 'spotify:track:1' }],
+          tracks: [{ uri: 'spotify:track:456' }],
           snapshot_id: 'abc123'
+        }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle spotify:playlist: prefixed IDs', async () => {
+      const mockResponse = { snapshot_id: 'abc123' };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+
+      const result = await handler.removeTracksFromPlaylist({
+        id: 'spotify:playlist:123',
+        tracks: [{ uri: 'spotify:track:456' }]
+      });
+
+      expect(mockApi.makeRequest).toHaveBeenCalledWith(
+        '/playlists/123/tracks',
+        'DELETE',
+        {
+          tracks: [{ uri: 'spotify:track:456' }]
         }
       );
       expect(result).toEqual(mockResponse);
@@ -263,86 +334,86 @@ describe('PlaylistsHandler', () => {
 
   describe('getCurrentUserPlaylists', () => {
     it('should fetch current user playlists with default parameters', async () => {
-      const mockPlaylists = { items: [{ id: '1' }, { id: '2' }] };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylists);
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getCurrentUserPlaylists({});
+      const result = await handler.getCurrentUserPlaylists({});
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/me/playlists');
-      expect(result).toEqual(mockPlaylists);
+      expect(result).toEqual(mockResponse);
     });
 
     it('should fetch current user playlists with custom parameters', async () => {
-      const mockPlaylists = { items: [{ id: '1' }, { id: '2' }] };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylists);
-      mockApi.buildQueryString.mockReturnValue('?limit=10&offset=20');
+      const mockResponse = { items: [{ id: '123' }, { id: '456' }] };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+      mockApi.buildQueryString.mockReturnValue('?limit=30&offset=20');
 
-      const result = await playlistsHandler.getCurrentUserPlaylists({
-        limit: 10,
+      const result = await handler.getCurrentUserPlaylists({
+        limit: 30,
         offset: 20
       });
 
-      expect(mockApi.makeRequest).toHaveBeenCalledWith('/me/playlists?limit=10&offset=20');
-      expect(result).toEqual(mockPlaylists);
+      expect(mockApi.makeRequest).toHaveBeenCalledWith('/me/playlists?limit=30&offset=20');
+      expect(result).toEqual(mockResponse);
     });
   });
 
   describe('getFeaturedPlaylists', () => {
     it('should fetch featured playlists with default parameters', async () => {
-      const mockPlaylists = { playlists: { items: [{ id: '1' }, { id: '2' }] } };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylists);
+      const mockResponse = { playlists: { items: [{ id: '123' }, { id: '456' }] } };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getFeaturedPlaylists({});
+      const result = await handler.getFeaturedPlaylists({});
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/browse/featured-playlists');
-      expect(result).toEqual(mockPlaylists);
+      expect(result).toEqual(mockResponse);
     });
 
     it('should fetch featured playlists with custom parameters', async () => {
-      const mockPlaylists = { playlists: { items: [{ id: '1' }, { id: '2' }] } };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylists);
-      mockApi.buildQueryString.mockReturnValue('?locale=es_ES&limit=10&offset=20');
+      const mockResponse = { playlists: { items: [{ id: '123' }, { id: '456' }] } };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+      mockApi.buildQueryString.mockReturnValue('?locale=es_ES&limit=30&offset=20');
 
-      const result = await playlistsHandler.getFeaturedPlaylists({
+      const result = await handler.getFeaturedPlaylists({
         locale: 'es_ES',
-        limit: 10,
+        limit: 30,
         offset: 20
       });
 
-      expect(mockApi.makeRequest).toHaveBeenCalledWith('/browse/featured-playlists?locale=es_ES&limit=10&offset=20');
-      expect(result).toEqual(mockPlaylists);
+      expect(mockApi.makeRequest).toHaveBeenCalledWith('/browse/featured-playlists?locale=es_ES&limit=30&offset=20');
+      expect(result).toEqual(mockResponse);
     });
   });
 
   describe('getCategoryPlaylists', () => {
     it('should fetch category playlists with default parameters', async () => {
-      const mockPlaylists = { playlists: { items: [{ id: '1' }, { id: '2' }] } };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylists);
+      const mockResponse = { playlists: { items: [{ id: '123' }, { id: '456' }] } };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('');
 
-      const result = await playlistsHandler.getCategoryPlaylists({
+      const result = await handler.getCategoryPlaylists({
         category_id: 'pop'
       });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/browse/categories/pop/playlists');
-      expect(result).toEqual(mockPlaylists);
+      expect(result).toEqual(mockResponse);
     });
 
     it('should fetch category playlists with custom parameters', async () => {
-      const mockPlaylists = { playlists: { items: [{ id: '1' }, { id: '2' }] } };
-      mockApi.makeRequest.mockResolvedValue(mockPlaylists);
-      mockApi.buildQueryString.mockReturnValue('?limit=10&offset=20');
+      const mockResponse = { playlists: { items: [{ id: '123' }, { id: '456' }] } };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+      mockApi.buildQueryString.mockReturnValue('?limit=30&offset=20');
 
-      const result = await playlistsHandler.getCategoryPlaylists({
+      const result = await handler.getCategoryPlaylists({
         category_id: 'pop',
-        limit: 10,
+        limit: 30,
         offset: 20
       });
 
-      expect(mockApi.makeRequest).toHaveBeenCalledWith('/browse/categories/pop/playlists?limit=10&offset=20');
-      expect(result).toEqual(mockPlaylists);
+      expect(mockApi.makeRequest).toHaveBeenCalledWith('/browse/categories/pop/playlists?limit=30&offset=20');
+      expect(result).toEqual(mockResponse);
     });
   });
 }); 

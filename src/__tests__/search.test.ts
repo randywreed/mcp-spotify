@@ -2,12 +2,13 @@ import { jest } from '@jest/globals';
 import { SearchHandler } from '../handlers/search.js';
 import { SpotifyApi } from '../utils/api.js';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
+import { AuthManager } from '../utils/auth.js';
 
 // Mock the SpotifyApi class
 jest.mock('../utils/api.js');
 
 describe('SearchHandler', () => {
-  let searchHandler: SearchHandler;
+  let handler: SearchHandler;
   let mockApi: jest.Mocked<SpotifyApi>;
 
   beforeEach(() => {
@@ -20,83 +21,71 @@ describe('SearchHandler', () => {
       buildQueryString: jest.fn(),
     } as unknown as jest.Mocked<SpotifyApi>;
 
-    searchHandler = new SearchHandler(mockApi);
+    handler = new SearchHandler(mockApi);
   });
 
   describe('search', () => {
-    it('should perform search with default parameters', async () => {
-      const mockResults = {
-        tracks: { items: [{ id: '1' }, { id: '2' }] }
-      };
-      mockApi.makeRequest.mockResolvedValue(mockResults);
+    it('should search with default parameters', async () => {
+      const mockResponse = { tracks: { items: [] } };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('?q=test&type=track&limit=20');
 
-      const result = await searchHandler.search({
+      const result = await handler.search({
         query: 'test',
         type: 'track'
       });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/search?q=test&type=track&limit=20');
-      expect(result).toEqual(mockResults);
+      expect(result).toEqual(mockResponse);
     });
 
-    it('should perform search with custom limit', async () => {
-      const mockResults = {
-        tracks: { items: [{ id: '1' }, { id: '2' }] }
-      };
-      mockApi.makeRequest.mockResolvedValue(mockResults);
-      mockApi.buildQueryString.mockReturnValue('?q=test&type=track&limit=10');
+    it('should search with custom limit', async () => {
+      const mockResponse = { tracks: { items: [] } };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
+      mockApi.buildQueryString.mockReturnValue('?q=test&type=track&limit=30');
 
-      const result = await searchHandler.search({
+      const result = await handler.search({
         query: 'test',
         type: 'track',
-        limit: 10
+        limit: 30
       });
 
-      expect(mockApi.makeRequest).toHaveBeenCalledWith('/search?q=test&type=track&limit=10');
-      expect(result).toEqual(mockResults);
-    });
-
-    it('should throw error when limit is out of range', async () => {
-      await expect(
-        searchHandler.search({
-          query: 'test',
-          type: 'track',
-          limit: 51
-        })
-      ).rejects.toThrow(new McpError(ErrorCode.InvalidParams, 'Limit must be between 1 and 50'));
+      expect(mockApi.makeRequest).toHaveBeenCalledWith('/search?q=test&type=track&limit=30');
+      expect(result).toEqual(mockResponse);
     });
 
     it('should encode query parameters', async () => {
-      const mockResults = {
-        tracks: { items: [{ id: '1' }, { id: '2' }] }
-      };
-      mockApi.makeRequest.mockResolvedValue(mockResults);
+      const mockResponse = { tracks: { items: [] } };
+      mockApi.makeRequest.mockResolvedValue(mockResponse);
       mockApi.buildQueryString.mockReturnValue('?q=test%20with%20spaces&type=track&limit=20');
 
-      const result = await searchHandler.search({
+      const result = await handler.search({
         query: 'test with spaces',
         type: 'track'
       });
 
       expect(mockApi.makeRequest).toHaveBeenCalledWith('/search?q=test%20with%20spaces&type=track&limit=20');
-      expect(result).toEqual(mockResults);
+      expect(result).toEqual(mockResponse);
     });
 
-    it('should handle special characters in query', async () => {
-      const mockResults = {
-        tracks: { items: [{ id: '1' }, { id: '2' }] }
-      };
-      mockApi.makeRequest.mockResolvedValue(mockResults);
-      mockApi.buildQueryString.mockReturnValue('?q=test%26special%3Dchars&type=track&limit=20');
+    it('should throw error when limit is less than 1', async () => {
+      await expect(handler.search({
+        query: 'test',
+        type: 'track',
+        limit: 0
+      })).rejects.toThrow(
+        new McpError(ErrorCode.InvalidParams, 'Limit must be between 1 and 50')
+      );
+    });
 
-      const result = await searchHandler.search({
-        query: 'test&special=chars',
-        type: 'track'
-      });
-
-      expect(mockApi.makeRequest).toHaveBeenCalledWith('/search?q=test%26special%3Dchars&type=track&limit=20');
-      expect(result).toEqual(mockResults);
+    it('should throw error when limit is greater than 50', async () => {
+      await expect(handler.search({
+        query: 'test',
+        type: 'track',
+        limit: 51
+      })).rejects.toThrow(
+        new McpError(ErrorCode.InvalidParams, 'Limit must be between 1 and 50')
+      );
     });
 
     it('should search for albums', async () => {
@@ -106,7 +95,7 @@ describe('SearchHandler', () => {
       mockApi.makeRequest.mockResolvedValue(mockResults);
       mockApi.buildQueryString.mockReturnValue('?q=test&type=album&limit=20');
 
-      const result = await searchHandler.search({
+      const result = await handler.search({
         query: 'test',
         type: 'album'
       });
@@ -122,7 +111,7 @@ describe('SearchHandler', () => {
       mockApi.makeRequest.mockResolvedValue(mockResults);
       mockApi.buildQueryString.mockReturnValue('?q=test&type=artist&limit=20');
 
-      const result = await searchHandler.search({
+      const result = await handler.search({
         query: 'test',
         type: 'artist'
       });
@@ -138,7 +127,7 @@ describe('SearchHandler', () => {
       mockApi.makeRequest.mockResolvedValue(mockResults);
       mockApi.buildQueryString.mockReturnValue('?q=test&type=playlist&limit=20');
 
-      const result = await searchHandler.search({
+      const result = await handler.search({
         query: 'test',
         type: 'playlist'
       });
