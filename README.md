@@ -5,7 +5,7 @@
 
 A Model Context Protocol (MCP) server that provides access to the Spotify Web API. This server enables interaction with Spotify's music catalog, including searching for tracks, albums, and artists, as well as accessing artist-specific information like top tracks and related artists.
 
-**Current Version:** 0.4.10
+**Current Version:** 0.4.11
 
 <a href="https://glama.ai/mcp/servers/mmrvuig6tp"><img width="380" height="200" src="https://glama.ai/mcp/servers/mmrvuig6tp/badge" alt="Spotify Server MCP server" /></a>
 
@@ -72,6 +72,8 @@ You'll need to provide your Spotify API credentials:
 - Access playlist tracks and items with pagination support
 - Support for both Spotify IDs and URIs
 - Automatic token management with client credentials flow
+- Comprehensive test suite for all functionality
+- Well-organized code with separation of concerns
 
 ## Available Tools
 
@@ -116,12 +118,37 @@ npx -y @thomaswawra/server-spotify
 
 This project is open source and available on GitHub at [https://github.com/superseoworld/mcp-spotify](https://github.com/superseoworld/mcp-spotify).
 
+### Project Structure
+
+The codebase is organized into the following directories:
+- `src/handlers/`: Contains handler classes for different Spotify API endpoints
+- `src/types/`: TypeScript interfaces for request and response objects
+- `src/utils/`: Utility functions and classes for API communication
+- `src/__tests__/`: Jest test files for all functionality
+
+### Testing
+
+The project uses Jest for testing. To run the tests:
+
+```bash
+npm test
+```
+
+To run tests in watch mode during development:
+
+```bash
+npm run test:watch
+```
+
+### Contributing
+
 To contribute:
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Add tests for your changes
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
 
 ## License
 
