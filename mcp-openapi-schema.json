@@ -1,0 +1,81 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ArtistLens MCP API",
+    "version": "0.4.12"
+  },
+  "servers": [
+    { "url": "https://your-domain.com", "description": "Production SSE endpoint" }
+  ],
+  "paths": {
+    "/mcp": {
+      "get": {
+        "summary": "SSE stream endpoint",
+        "responses": {
+          "200": {
+            "description": "SSE event stream"
+          }
+        }
+      },
+      "post": {
+        "summary": "Invoke a tool via JSON-RPC",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/GetAccessTokenParams" },
+                  { "$ref": "#/components/schemas/SearchParams" }
+                  /* ...add refs for each tool schema... */
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON-RPC response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/JsonRpcResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "JsonRpcResponse": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": { "type": "string", "enum": ["2.0"] },
+          "id": { "type": ["string", "integer"] },
+          "result": {},
+          "error": {}
+        },
+        "required": ["jsonrpc", "id"]
+      },
+      "GetAccessTokenParams": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "SearchParams": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["track", "album", "artist", "playlist"]
+          },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 50 }
+        },
+        "required": ["query", "type"]
+      }
+      /* ...remaining tool schemas... */
+    }
+  }
+}

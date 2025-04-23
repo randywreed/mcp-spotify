@@ -1,0 +1,7 @@
+schema: mcp/v1
+id: artistlens-copilot-connector
+transport:
+  type: sse
+  url: https://your-domain.com/mcp
+authentication:
+  type: bearer

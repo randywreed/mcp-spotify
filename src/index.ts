@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import express from 'express';
+import { StreamableHttpServerTransport } from '@modelcontextprotocol/sdk/server/streamable-http.js';
 import {
   CallToolRequestSchema,
   ErrorCode,
@@ -917,9 +918,12 @@ class SpotifyServer {
   }
 
   async run() {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    console.error('Spotify MCP server running on stdio');
+    const transport = new StreamableHttpServerTransport(this.server);
+    const app = express();
+    app.use(express.raw({ type: '*/*' }));
+    app.all('/mcp', (req, res) => transport.handleHttpRequest(req, res));
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => console.log(`SSE MCP listening on http://localhost:${port}/mcp`));
   }
 }
 
